@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Expense Summary - Expense Tracker{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="fas fa-chart-bar me-2"></i>Expense Summary</h2>
+        <p class="text-muted mb-0">Overview of all your expenses</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('add_expense') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>Add Expense
+        </a>
+    </div>
+</div>
+
+<!-- Main Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card summary-card text-white h-100">
+            <div class="card-body d-flex align-items-center">
+                <div>
+                    <h5 class="card-title mb-2">
+                        <i class="fas fa-dollar-sign me-2"></i>Total Expenses
+                    </h5>
+                    <h2 class="mb-0">${{ "%.2f"|format(total) }}</h2>
+                    <small>Across all categories</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body d-flex align-items-center">
+                <div>
+                    <h5 class="card-title mb-2">
+                        <i class="fas fa-tags me-2"></i>Active Categories
+                    </h5>
+                    <h2 class="mb-0">{{ category_totals|length }}</h2>
+                    <small>Different spending categories</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Breakdown -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Expenses by Category
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if category_totals %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Category</th>
+                                <th>Total Amount</th>
+                                <th>Percentage</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category, amount in category_totals %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-primary fs-6">{{ category.title() }}</span>
+                                </td>
+                                <td class="fw-bold text-success h5 mb-0">
+                                    ${{ "%.2f"|format(amount) }}
+                                </td>
+                                <td>
+                                        <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                            <div class="progress-bar bg-primary" role="progressbar"
+                                                 style="width: {{ '%.1f'|format(((amount / total) * 100) if total > 0 else 0) }}%"
+                                                 aria-valuenow="{{ '%.1f'|format(((amount / total) * 100) if total > 0 else 0) }}"
+                                                 aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="small text-muted">
+                                            {{ '%.1f'|format(((amount / total) * 100) if total > 0 else 0) }}%
+                                        </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('category_expenses', category=category) }}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Summary Statistics -->
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6 class="mb-3">
+                        <i class="fas fa-calculator me-1"></i>Summary Statistics
+                    </h6>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Highest Category</small>
+                            <div class="h6 mb-0">
+                                {% set max_category = category_totals[0] %}
+                                {{ max_category[0].title() }}
+                            </div>
+                            <small class="text-success">${{ "%.2f"|format(max_category[1]) }}</small>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Lowest Category</small>
+                            <div class="h6 mb-0">
+                                {% set min_category = category_totals[-1] %}
+                                {{ min_category[0].title() }}
+                            </div>
+                            <small class="text-success">${{ "%.2f"|format(min_category[1]) }}</small>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Average per Category</small>
+                            <div class="h6 mb-0 text-primary">
+                                ${{ "%.2f"|format(total / category_totals|length if category_totals|length > 0 else 0) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Categories Count</small>
+                            <div class="h6 mb-0">{{ category_totals|length }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No expense data yet</h4>
+                    <p class="text-muted">Add some expenses to see your spending summary!</p>
+                    <a href="{{ url_for('add_expense') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Add Your First Expense
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-rocket me-1"></i>Quick Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <a href="{{ url_for('add_expense') }}" class="text-decoration-none">
+                            <i class="fas fa-plus-circle fa-2x text-primary mb-2"></i>
+                            <div class="h6">Add Expense</div>
+                            <small class="text-muted">Record a new expense</small>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{{ url_for('index') }}" class="text-decoration-none">
+                            <i class="fas fa-list fa-2x text-success mb-2"></i>
+                            <div class="h6">View All</div>
+                            <small class="text-muted">See all expenses</small>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{{ url_for('summary') }}" class="text-decoration-none">
+                            <i class="fas fa-chart-bar fa-2x text-info mb-2"></i>
+                            <div class="h6">Summary</div>
+                            <small class="text-muted">View spending analysis</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

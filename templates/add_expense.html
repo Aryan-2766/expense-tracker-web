@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Add Expense - Expense Tracker{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>Add New Expense
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_expense') }}">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">
+                            <i class="fas fa-dollar-sign me-1"></i>Amount *
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" step="0.01" min="0.01" class="form-control"
+                                   id="amount" name="amount" placeholder="0.00" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-comment me-1"></i>Description *
+                        </label>
+                        <input type="text" class="form-control" id="description"
+                               name="description" placeholder="What did you spend on?" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="category" class="form-label">
+                            <i class="fas fa-tag me-1"></i>Category *
+                        </label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="">Choose a category...</option>
+                            <option value="food">🍕 Food & Dining</option>
+                            <option value="transportation">🚗 Transportation</option>
+                            <option value="entertainment">🎬 Entertainment</option>
+                            <option value="shopping">🛍️ Shopping</option>
+                            <option value="utilities">💡 Utilities</option>
+                            <option value="healthcare">🏥 Healthcare</option>
+                            <option value="education">📚 Education</option>
+                            <option value="travel">✈️ Travel</option>
+                            <option value="other">📦 Other</option>
+                        </select>
+                        <div class="form-text">Or enter a custom category below</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="customCategory" class="form-label">
+                            <i class="fas fa-edit me-1"></i>Custom Category
+                        </label>
+                        <input type="text" class="form-control" id="customCategory"
+                               placeholder="Enter custom category (optional)">
+                        <div class="form-text">This will override the category selection above</div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Add Expense
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Tips -->
+        <div class="card mt-4 border-info">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-lightbulb me-1"></i>Quick Tips
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0 small">
+                    <li>Use specific descriptions to remember what you spent on</li>
+                    <li>Choose from common categories or create your own</li>
+                    <li>All fields marked with * are required</li>
+                    <li>You can always edit or delete expenses later</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+document.getElementById('customCategory').addEventListener('input', function() {
+    const customCategory = this.value.trim();
+    const categorySelect = document.getElementById('category');
+
+    if (customCategory) {
+        // Create a temporary option for the custom category
+        let customOption = categorySelect.querySelector('option[value="custom"]');
+        if (!customOption) {
+            customOption = document.createElement('option');
+            customOption.value = 'custom';
+            categorySelect.appendChild(customOption);
+        }
+        customOption.textContent = customCategory;
+        customOption.selected = true;
+        categorySelect.value = 'custom';
+    } else {
+        categorySelect.value = '';
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

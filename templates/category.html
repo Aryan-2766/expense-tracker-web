@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.title() }} Expenses - Expense Tracker{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>
+            <i class="fas fa-tag me-2"></i>{{ category.title() }} Expenses
+        </h2>
+        <p class="text-muted mb-0">Total spent: <strong class="text-success">${{ "%.2f"|format(total) }}</strong></p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-arrow-left me-1"></i>Back to All
+        </a>
+        <a href="{{ url_for('add_expense') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>Add Expense
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <span class="badge bg-primary me-2">{{ category.title() }}</span>
+            {{ expenses|length }} expense{{ 's' if expenses|length != 1 else '' }}
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if expenses %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenses %}
+                    <tr>
+                        <td>{{ expense[0] }}</td>
+                        <td class="fw-bold text-success">${{ "%.2f"|format(expense[1]) }}</td>
+                        <td>{{ expense[2] }}</td>
+                        <td>{{ expense[4] }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('delete_expense', expense_id=expense[0]) }}"
+                                  onsubmit="return confirm('Are you sure you want to delete this expense?')"
+                                  class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Category Summary -->
+        <div class="mt-4 p-3 bg-light rounded">
+            <h6 class="mb-2">
+                <i class="fas fa-chart-bar me-1"></i>Category Summary
+            </h6>
+            <div class="row">
+                <div class="col-md-4">
+                    <small class="text-muted">Total Expenses</small>
+                    <div class="h5 mb-0 text-success">${{ "%.2f"|format(total) }}</div>
+                </div>
+                <div class="col-md-4">
+                    <small class="text-muted">Number of Items</small>
+                    <div class="h5 mb-0">{{ expenses|length }}</div>
+                </div>
+                <div class="col-md-4">
+                    <small class="text-muted">Average per Item</small>
+                    <div class="h5 mb-0 text-primary">
+                        ${{ "%.2f"|format(total / expenses|length) if expenses|length > 0 else 0 }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No {{ category }} expenses yet</h4>
+            <p class="text-muted">Add your first {{ category }} expense to get started!</p>
+            <a href="{{ url_for('add_expense') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Add {{ category.title() }} Expense
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
