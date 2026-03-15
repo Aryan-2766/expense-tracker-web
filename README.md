@@ -12,6 +12,20 @@ A modern web-based expense tracking application built with Flask and SQLite.
 - **Delete Expenses**: Remove expenses with confirmation
 - **SQLite Database**: Persistent storage with automatic database creation
 
+## Screenshots
+
+### Home
+![Home](expense_tracker_ss/Home.png)
+
+### Add Expense
+![Add Expense](expense_tracker_ss/Add_exp.png)
+
+### Summary
+![Summary](expense_tracker_ss/Exp_summary.png)
+
+### Category
+![Category](expense_tracker_ss/Exp_category.png)
+
 ## Installation
 
 1. Clone or download this repository
